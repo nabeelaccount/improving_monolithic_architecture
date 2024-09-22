@@ -101,7 +101,8 @@ In large scale project as this, there is no one simple answer, and the right too
 
 ### Migration Procedure
 
-Stage 1: Planning and Preparation
+#### Stage 1: Planning and Preparation
+
 1. Team Alignment
 - Arrange meetings with all stackholders align on the goals, gather requirements and concerns.
 - Demonstrate what success looks like.
@@ -114,7 +115,8 @@ Stage 1: Planning and Preparation
 - Catelog all existing AWS resources and their configurations
 - Catelog resource dependenceies and data flows between services.
 
-Phase 2: Infrastructure setup
+#### Stage 2: Infrastructure setup
+
 1. Implement IaC
 - Choose tool based on teams skillset, in this example it's terraform
 - Set up Git repository, S3 bucket for state control, and DynamoDB for state lock
@@ -131,7 +133,8 @@ Phase 2: Infrastructure setup
 - Consider 3rd party monitoring tools including a volunerability analysis of container images.
 - Restrict how permissions can be allocated to users. Team lead or managers can request access to individuals.
 
-Phase 3: Migrating applications
+#### Stage 3: Migrating applications
+
 1. Containerisation
 - Containerise applications using Docker
 - Store the container images in Amazon Elastic Container Rigestry (ECR)
@@ -149,7 +152,64 @@ Phase 3: Migrating applications
 - Ensure the applications running in EKS are able to reach the database
 - Ensure database credentials and securely stored in AWS secret manager.
 
+6. Deploy Karpenter (instead of using Auto scaling)
+- Karpenter has the ability to shift between instance size, choosing the optimum instance for EKS requirements
+- Karpenter shines most in GPU intensive tasks.
 
+#### Stage 4: Implementing CICD pipeline
+
+1. Configure pipline for the infrastructure
+- Setup a GitHub action pipeline or atlantis for the terraform manifest infrastructure
+
+2. Automate IaC linting and validation deployment
+- Implmenting automated linting.
+- Segregate environments by state and accounts
+- Ensure approval is required before any merges to the main branch
+
+3. Configure pipline for the Kubernetes manifest application
+- Configure CI to be done via Github Actions or CircleCI
+- Ensure all users who have access to the repository have access to the Github Action run or CircleCI
+- If build is successful in CircleCI and Pull Request (PR) is approved, deploy to environment using ArgoCD.
+
+4. Automate Kubernetes manifest application deployment
+- Create an manifest validation step (request and limits check)
+
+5. Configure pipeline for Docker images to ECR deployment
+- Automate checks with 3rd party for critical volunerability checks
+- Validate docker image
+- (optional) make use of secured golden base image for a more secure architecture
+
+#### Stage 5: Monitoring and Optmisation
+
+1. Monitoring setup
+- Install Cloudwatch agents on EKS EC2's for more rebous metrics like memory usage
+- Configure Cloudwatch alarms (and optionally Cloudwatch dashboard) 
+- A better alternative to cloudwatch dashboard is Grafana dashboards
+
+2. Logging
+- Set up log aggregation using Cloudwatch agent and send logs to Grafana Loki
+- Logs can also be viewed in ELK stack i.e. Kibana
+- Ensure necessary logs are retained for policy compliance.
+
+3. Performance monitoring
+- Monitor resource metrics on Grafana and identify bottlenecks
+- Fine tune specified resource and limits on Kubernetes manifest to aid in Karpenter (autoscaler)
+
+#### Stage 6: Shift and Validation
+
+1. DNS Update
+- Update Route 53 DNS records to point to the new Application Load Balancer (ALB) 
+
+2. Testing
+- Validate functionality of each server with it's appropriate team
+- Monitor for any issues
+- Conduct load testing with the QA team if one is available.
+- Ensure sufficient time is given to the new architect to check for any issues
+
+3. Decommision the monolithic infrastructure
+- After successful validation, decommissioning the old EC2 instance and their associated Elastic Load Balancer (ELB).
+- Remove any other unsed resources.
 
 For more detailed reading, please use the following resources:
 - (Moving fom Monolithic to Microservice Architecture)[https://aws.amazon.com/compare/the-difference-between-monolithic-and-microservices-architecture/]
+- https://sigma.software/about/media/migrating-monolith-microservices-step-step-guide
