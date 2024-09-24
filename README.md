@@ -93,6 +93,9 @@ In large scale project as this, there is no one simple answer, and the right too
 - Security Groups and Network ACL (firewall): limit access to inbound and outbound traffic rules in resources
 - AWS Web Application Firewall (WAF): Add WAF after load balancer to protect against commonly uses web exploitations.
 - Encryption: Encrypt resourcse at rest (KMS, S3, RDS, EC2) and during transit (HTTPS)
+- VPN: Users connect to AWS and AWS resources through VPN (fixed IP addresses)
+- AWS IAM Identity Center (previously Single Sign-oN SSO) for authentication.
+
 
 9. Cost Optimisation
 - VM cost plan: buy Reserved Instances (RI) for resources we know we will need and/or Saving Plans to commit to spending $$ on resources for t time.
@@ -129,9 +132,10 @@ In large scale project as this, there is no one simple answer, and the right too
 3. Security
 - Create separate IAM roles for developers, engineers, billing stackholders and admin
 - Ensure resources are encrypted at rest using KMS and in transit
-- Implement SSO for authentication into the infrastructure by users
+- Implement SSO for authentication into the infrastructure by users, leveraging existing (Microsoft) Active Directory or create new in AWS.
 - Consider 3rd party monitoring tools including a volunerability analysis of container images.
 - Restrict how permissions can be allocated to users. Team lead or managers can request access to individuals.
+- Create a VPN if one does not exist for users to tunnel through in order to access AWS and AWS resources. VPN's provided fixed IP address.
 
 #### Stage 3: Migrating applications
 
@@ -209,6 +213,26 @@ In large scale project as this, there is no one simple answer, and the right too
 3. Decommision the monolithic infrastructure
 - After successful validation, decommissioning the old EC2 instance and their associated Elastic Load Balancer (ELB).
 - Remove any other unsed resources.
+
+### Diagrams
+![Architecture design 1](images/EKS_infrastructure.png)
+
+![Architecture design 2](images/EKS_infrastructure_design.png)
+
+![Architecture design 3](images/EKS_resources.png)
+
+- (Infrastructure Deployment)[https://miro.com/welcomeonboard/V0kzZkZ4Z1YyZU1pSGFkaGhOZ20xaVIyYWZDY3dDaFNFYWFyYU1TTWxTcjFQcXhPaWYzUVdYbmlJV2h6aXlzdHwzNDU4NzY0NTMzNTA5OTMyOTgxfDI=?share_link_id=420350303101]
+
+- (Kubernetes Application Deployment)[https://miro.com/welcomeonboard/V0kzZkZ4Z1YyZU1pSGFkaGhOZ20xaVIyYWZDY3dDaFNFYWFyYU1TTWxTcjFQcXhPaWYzUVdYbmlJV2h6aXlzdHwzNDU4NzY0NTMzNTA5OTMyOTgxfDI=?share_link_id=145558912219]
+
+- (CICD Codepipeline)[https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/create-a-ci-cd-pipeline-to-validate-terraform-configurations-by-using-aws-codepipeline.html]
+
+
+![Authentication](images/Authentication.jpg)
+AWS Single Sign-On (AWS SSO) is now AWS IAM Identity Center
+- IAM identity: manages identity federations (Authenticating users from multiple systems Google, Okta etc) within AWS
+- (Authentication)[https://medium.com/cloud-native-daily/automate-aws-sso-using-terraform-2f219a45c16f]
+- (Authentication third party)[https://practicalcloud.net/comprehensive-guide-to-aws-single-sign-on-sso-centralized-access-and-permission-management-across-multiple-aws-accounts/]
 
 For more detailed reading, please use the following resources:
 - (Moving fom Monolithic to Microservice Architecture)[https://aws.amazon.com/compare/the-difference-between-monolithic-and-microservices-architecture/]
