@@ -228,7 +228,7 @@ In large scale project as this, there is no one simple answer, and the right too
 - (CICD Codepipeline)[https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/create-a-ci-cd-pipeline-to-validate-terraform-configurations-by-using-aws-codepipeline.html]
 
 
-![Authentication](images/Authentication.jpg)
+![Authentication](images/Authentication.png)
 AWS Single Sign-On (AWS SSO) is now AWS IAM Identity Center
 - IAM identity: manages identity federations (Authenticating users from multiple systems Google, Okta etc) within AWS
 - (Authentication)[https://medium.com/cloud-native-daily/automate-aws-sso-using-terraform-2f219a45c16f]
