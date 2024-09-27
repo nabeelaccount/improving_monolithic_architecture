@@ -11,16 +11,34 @@ We first begin with a simple task of producing efficient minimal container image
 ## Task 1: Quick Optimisation Challenge
 
 ```
-FROM rust:1.81
+# Use a minimal RUST base image to reduce the image size
+FROM rust:1.69-slim-bullseye as builder
 
-# Install project dependencies (note this layer gets re-run on every change)
-COPY ./Cargo.toml ./Cargo.toml
+WORKDIR /project
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+    build-essential \
+    curl
+
+COPY Cargo.toml Cargo.lock ./
+
+# Run dependencies
 RUN cargo fetch
 
+# Copy source files and build project
 COPY ./src ./src
-
 RUN cargo build --release
-CMD ["./target/release/myapp"]
+
+# Use a minimal image for the final stage
+FROM debian:buster-slim
+
+# Copy the built binary from the builder stage
+COPY --from=builder /project/target/release/myapp /usr/local/bin/myapp
+
+# Set the entrypoint for the application
+CMD ["myapp"]
+
 ```
 
 Optimisation
