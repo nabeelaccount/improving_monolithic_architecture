@@ -41,9 +41,6 @@ CMD ["myapp"]
 
 ```
 
-Optimisation
-- As this is a Rust application, the latest stable Rust image was used. The reason this image was used rather than the slim, or alpine version is because it already has curl installed and will not require any package installation or updating reducing the process time. Build-essential package contains many essentials dependencies packages which won't be needed in this case.
-
 You can find the list of available packages using the following commands:
 - https://stackoverflow.com/questions/57803595/how-do-i-list-all-applications-that-are-contained-in-a-docker-container 
 
